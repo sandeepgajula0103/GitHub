@@ -1,31 +1,42 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: Merge YAML Files
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches:
+      - main  # or the branch you want to trigger the action
+  workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
-  build:
-
+  merge-yaml:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x, 18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq  # Install jq
+        sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+        sudo chmod +x /usr/bin/yq
+
+    - name: Merge YAML files and remove duplicates
+      run: |
+        # Set file paths (You can change these paths according to your project)
+        yaml_file1="data1.yaml"
+        yaml_file2="data2.yaml"
+        merged_output="data3.yml"
+
+        # Merge YAML files and remove duplicates
+        yq eval-all '. as $item ireduce ({}; . * $item )' "$yaml_file1" "$yaml_file2" | yq eval 'del(.[] | select(. == null))' - > "$merged_output"
+
+    - name: Commit merged file
+      run: |
+        git config --global user.name 'sandeepgajula0103'
+        git config --global user.email 'sandeepgajula0103@gmail.com'
+        git add "$merged_output"
+        git commit -m "Merged YAML files and removed duplicates"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Uses the built-in token to authenticate for commits
