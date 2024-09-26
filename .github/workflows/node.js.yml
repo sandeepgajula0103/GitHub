@@ -39,4 +39,4 @@ jobs:
         git commit -m "Merged YAML files and removed duplicates"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Uses the built-in token to authenticate for commits
+        GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }} # Uses the built-in token to authenticate for commits
