@@ -1,0 +1,7 @@
+name: 'file2'
+paths:
+  path1:
+    content: "t"
+    value: "t"
+  path2:
+    content: "b"
