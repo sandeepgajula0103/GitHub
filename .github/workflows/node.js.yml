@@ -24,9 +24,9 @@ jobs:
     - name: Merge YAML files and remove duplicates
       run: |
         # Set file paths (You can change these paths according to your project)
-        yaml_file1="data1.yaml"
-        yaml_file2="data2.yaml"
-        merged_output="data3.yml"
+        yaml_file1=./data1.yaml
+        yaml_file2=./data2.yaml
+        merged_output=./data3.yml
 
         # Merge YAML files and remove duplicates
         yq eval-all '. as $item ireduce ({}; . * $item )' "$yaml_file1" "$yaml_file2" | yq eval 'del(.[] | select(. == null))' - > "$merged_output"
