@@ -35,7 +35,7 @@ jobs:
       run: |
         git config --global user.name 'sandeepgajula0103'
         git config --global user.email 'sandeepgajula0103@gmail.com'
-        git add "$merged_output"
+        git add .
         git commit -m "Merged YAML files and removed duplicates"
         git push
       env:
